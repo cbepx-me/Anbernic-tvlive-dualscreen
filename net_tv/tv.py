@@ -16,6 +16,7 @@ import select
 import zipfile
 import fcntl
 import configparser
+import datetime
 
 VERSION = "1.0.1"
 
@@ -771,6 +772,9 @@ class TVApp:
         self.board_info = board_info
         self.hw_info = self.cfg.BOARD_MAPPING.get(board_info, 5)
 
+        self.screenshot_dir = "/mnt/mmc/anbernic/screenshots"
+        os.makedirs(self.screenshot_dir, exist_ok=True)
+
         # 检测显示器数量，决定UI屏幕和视频屏幕
         sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO)
         display_count = sdl2.SDL_GetNumVideoDisplays()
@@ -827,6 +831,21 @@ class TVApp:
 
     def reset_hint_timer(self):
         self.hint_timer = self.hint_timer_default
+
+    def take_screenshot(self):
+        try:
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            for idx, scr in enumerate(self.ui.screens):
+                img = scr["surface"]
+                if img.mode != "RGB":
+                    img = img.convert("RGB")
+                label = "upper" if idx == 0 else "lower"
+                filename = f"screenshot_{label}_{timestamp}.png"
+                filepath = os.path.join(self.screenshot_dir, filename)
+                img.save(filepath, "PNG")
+                LOGGER.info("Screenshot saved: %s", filepath)
+        except Exception as e:
+            LOGGER.error("Failed to save screenshot: %s", e)
 
     def t(self, key):
         return self.translator.t(key)
