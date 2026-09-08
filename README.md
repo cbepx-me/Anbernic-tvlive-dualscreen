@@ -1,8 +1,15 @@
 # TVLive DualScreen
 
+![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)
+![Platform](https://img.shields.io/b/platform-Anbernic%20Dual%20Screen-green.svg)
+![License](https://img.shields.io/b/license-MIT-yellow.svg)
+
 **TVLive DualScreen** is a live TV player designed for Anbernic dual-screen handheld devices (e.g., RGds, RGdsplus). It uses the **lower screen** as the control UI and the **upper screen** for fullscreen video playback.
 
-![Screenshot](screenshot.png)  <!-- replace with actual screenshot -->
+## Screenhost
+
+<img width="682" height="512" alt="screenshot_upper_20260908_093505" src="https://github.com/user-attachments/assets/9c923f1e-6d48-4237-bb4d-0aa557f35f79" />
+<img width="682" height="512" alt="screenshot_lower_20260908_093505" src="https://github.com/user-attachments/assets/5e44de0b-17f8-4157-bc07-270d74938569" />
 
 ## Features
 
