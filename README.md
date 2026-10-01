@@ -1,118 +1,116 @@
-# TVLive DualScreen
+# TVLive for Anbernic RK3568
 
-![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+A high-performance live TV streaming application for Anbernic RK3568 handheld devices (RG35XX Plus series and compatible models).
 
-**TVLive DualScreen** is a live TV player designed for Anbernic dual-screen handheld devices (e.g., RGds, RGdsplus). It uses the **lower screen** as the control UI and the **upper screen** for fullscreen video playback.
+## Overview
 
-## Screenhost
-
-<img width="682" height="512" alt="screenshot_upper_20260908_093505" src="https://github.com/user-attachments/assets/9c923f1e-6d48-4237-bb4d-0aa557f35f79" />
-<img width="682" height="512" alt="screenshot_lower_20260908_093505" src="https://github.com/user-attachments/assets/5e44de0b-17f8-4157-bc07-270d74938569" />
+TVLive is an IPTV player designed specifically for Anbernic RK3568 handhelds. It supports M3U playlists, channel logo display, multi-language UI, and is optimized for low-memory embedded devices.
 
 ## Features
 
-- Dual-screen support (UI on lower, video on upper)
-- Hardware button mapping (A/B/X/Y, L1/R1, D-Pad, Volume, Menu)
-- M3U/M3U8 playlist parsing with caching
-- Multi-language support (English, Chinese, Japanese, Korean, etc.)
-- WiFi status, battery level, and time display
-- Volume control with on‑screen progress bar
-- Resume playback from last channel
-- IPC volume control for mpv
-- Automatic screen timeout (dim UI after inactivity)
+- 📺 **M3U Playlist Support** — Load standard M3U/M3U8 playlists
+- 🖼️ **Channel Logos** — Async logo loading with disk cache
+- 🌐 **Multi-language** — 10 languages supported (English, Chinese, Japanese, Korean, etc.)
+- 📱 **Touch & Buttons** — Full touchscreen and gamepad button support
+- 🔊 **Volume Control** — Via mpv IPC, works during playback
+- 💾 **Resume** — Remembers last channel, source, and volume
+- 🎨 **Dark / Light Theme** — Toggle anytime with L2
 
 ## Requirements
 
-- Anbernic device with dual displays (RG35xx H/Plus, RGds, etc.)
-- Linux OS (stock firmware)
-- Python 3.8+
-- Dependencies:
-  - `mpv` (for video playback)
-  - `SDL2` (via `python-sdl2`)
-  - `Pillow` (PIL)
-  - `amixer` (for volume control)
+### Build Dependencies (Ubuntu/Debian)
 
-## Installation
+```bash
+sudo apt update
+sudo apt install -y build-essential cmake pkg-config \
+    libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-gfx-dev \
+    libminizip-dev libtinyxml2-dev
+```
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/tvlive-dualscreen.git
-   cd tvlive-dualscreen
-   ```
+### Runtime Dependencies (on device)
 
-2. Install system dependencies (on device):
-   ```bash
-   sudo apt update
-   sudo apt install mpv python3-pip
-   pip3 install pillow pysdl2
-   ```
+All required shared libraries are pre-installed on Anbernic RK3568 devices:
 
-3. Prepare directories:
-   - Place your `.m3u` / `.m3u8` playlist files in any of the following folders:
-     - `/roms/TV/`
-     - `/mnt/mmc/TV/`
-     - `/mnt/sdcard/TV/`
-     - `./TV/` (inside the app directory)
+- SDL2 (2.0.12+)
+- SDL2_image (2.0.9+)
+- SDL2_ttf
+- SDL2_gfx
+- mpv (for video playback)
 
-4. (Optional) Place a custom font at `font/font.ttf`; otherwise the fallback default font is used.
+## Building
+
+```bash
+git clone https://github.com/cbepx-me/TVLive_for_Anbernic.git
+cd TVLive_for_Anbernic
+./build.sh
+```
+
+The binary will be at `build/tvlive`.
 
 ## Usage
 
-- **Launch** the program:
-  ```bash
-  python3 tv.py
-  ```
+### Playlists
 
-- **Controls**:
-  - **D-Pad Up/Down** – change channel
-  - **D-Pad Left/Right** – page up/down
-  - **L1/R1** – switch playlist source
-  - **A** – play selected channel
-  - **B** – stop playback
-  - **X** – toggle screen off/on (UI dimming)
-  - **Y** – refresh sources
-  - **SELECT** – cycle languages
-  - **MENU** – exit program
-  - **Vol+/Vol-** – adjust volume
+Place your M3U/M3U8 files in `/mnt/mmc/TV/`, `/mnt/sdcard/TV/`, or `/roms/TV/`.
 
-- **Configuration**:
-  - Settings are stored in `tv.ini` (language, volume, resume position).
-  - Language can also be set via `language.ini` in `/mnt/vendor/oem/` (system language file).
+### Controls
 
-## File Structure
+| Button | Action |
+|--------|--------|
+| ↑ / ↓ | Channel up/down |
+| ← / → | Page up/down |
+| A | Play selected channel |
+| B | Stop playback / Exit |
+| L1 / R1 | Previous / Next source |
+| L2 | Toggle theme |
+| L3 | Cycle font size |
+| SELECT | Exit |
+| MENUF | Exit |
+| V+ / V- | Volume up/down |
+
+## Touch
+- Tap channel list to select
+- Tap buttons at bottom for actions
+
+## Project Structure
 
 ```
-.
-├── tv.py                # Main application
-├── deps/                # (auto-created) third-party libs
-├── font/                # Custom font file (optional)
-├── lang/                # Language JSON files (en_US.json, zh_CN.json, ...)
-├── TV/                  # Default playlist folder
-├── tv.ini               # Configuration (auto-generated)
-└── .cache_*.dat         # Cached playlists (auto-generated)
+src/                    — C++ source files
+lang/i18n.json          — Translation strings
+third_party/            — Bundled third-party headers (nlohmann/json)
+CMakeLists.txt          — Build configuration
+build.sh                — One-click build script
 ```
 
-## Building / Packaging
+## Technical Notes
 
-You can create a standalone distribution using `pyinstaller`:
-```bash
-pip install pyinstaller
-pyinstaller --onefile --add-data "lang:lang" --add-data "font:font" tv.py
-```
-Then copy the resulting binary and required assets to your device.
+### GPU Driver Compatibility
 
-## Contributing
+The RK3568 uses a Mali G31 GPU. SDL2's `SDL_RENDERER_ACCELERATED` may fail on some firmware versions. The application automatically falls back to software rendering if hardware acceleration is unavailable.
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+### Cross-Compilation
+
+The device runs Ubuntu 22.04 LTS with glibc 2.35. To build binaries compatible with the device:
+
+- Use GCC ≤ 12 to avoid GLIBCXX version mismatches
+- Link against glibc ≤ 2.35
+- A native aarch64 build (inside an arm64 Docker container) produces working binaries
+
+### mpv IPC
+
+Volume control is implemented via mpv's JSON IPC interface. The socket path is `/tmp/tv-mpv-<pid>.sock`.
 
 ## License
 
-This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+MIT License
 
-## Acknowledgments
+## Credits
 
-- Inspired by the Anbernic community's love for portable media.
-- Uses `mpv` for reliable video decoding.
-- Built with `SDL2` and `Pillow` for lightweight UI rendering.
+- Original Python implementation: cbepx-me
+- C++ port: cbepx-me
+- SDL2, SDL2_image, SDL2_ttf, SDL2_gfx
+- nlohmann/json
+- minizip
+- tinyxml2
+```
+
